@@ -6,6 +6,8 @@ A ~78-second, 1920x1080 explainer with voice-over on what search engine optimiza
 
 ## Storyboard
 
+Times are on the design timeline; the voice-over warp stretches them to ~78 s in the final video.
+
 | Time | Scene | Technique |
 |---|---|---|
 | 0–7s | "Every day, billions of searches. Only a few get found." | Galaxy of particles morphs into a globe; camera rushes through it with a flash cut |
@@ -15,7 +17,7 @@ A ~78-second, 1920x1080 explainer with voice-over on what search engine optimiza
 | 30–37s | 02 Index: network nodes fly into a curved library wall, scanning beam files them | Match-cut morph, tracking shot, whip pan with motion blur |
 | 37–46s | 03 Rank: Relevance, Quality, Authority, Experience lift "Your website" to #1 | 3D result cards reorder, glow pulse |
 | 46–54s | Three fronts: On-page, Technical, Off-page | Starfield converges into spheres that morph into a document, gear and chain links |
-| 54–62s | "Don't chase the algorithm. Be the answer." → Amiri end card | Particles form a rotating ring, lig## Voice-over
+| 54–72s | "Don't chase the algorithm." → "They find you." → "Want to be the answer?" Amiri end card + "Book your free SEO strategy call" | Particles form a rotating ring, light leak, gold CTA button |
 
 Narrated with the open-source Kokoro-82M voice `af_heart` (fp16 ONNX, espeak-ng phonemes). The script lives in
 `vo_script.json`; each line has an *anchor* on the design timeline in `index.html`. `build_timeline.py` writes
