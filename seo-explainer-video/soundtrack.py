@@ -32,16 +32,33 @@ for ci, ch in enumerate(chords):
     m = int(length * SR); tt = np.arange(m) / SR
     sig = np.zeros(m)
     for k, mn in enumerate(ch):
-        f0 = note(mn - 12)
+        f0 = note(mn)
         for det in (-0.12, 0.12):
             ph = rng.uniform(0, 6.28)
             for h in range(1, 7):
                 sig += np.sin(2 * np.pi * f0 * h * (1 + det / 100) * tt + ph * h) / (h ** 1.6) * 0.5
     sig *= (0.75 + 0.25 * np.sin(2 * np.pi * 0.15 * tt + ci))
     sig *= env_adsr(m, 2.0, 2.5)
-    add(sig, start, pan=(-0.3 if ci % 2 else 0.3), gain=0.018)
+    add(sig, start, pan=(-0.3 if ci % 2 else 0.3), gain=0.016)
+
+# --- plucked arpeggio: mid-range melody that carries on phone speakers
+def pluck(at, f0, gain, pan):
+    m = int(1.2 * SR); tt = np.arange(m) / SR
+    s = sum(np.sin(2 * np.pi * f0 * h * tt) * np.exp(-tt * (3 + h * 2.5)) / h for h in range(1, 6))
+    s[: int(0.003 * SR)] *= np.linspace(0, 1, int(0.003 * SR))
+    add(s * gain, at, pan)
+step = 60 / 96 / 2  # eighth notes at 96 bpm
+pattern = [0, 1, 2, 3, 2, 1, 2, 3]
+k = 0; at = 7.0
+while at < 59.0:
+    ch = chords[min(int(at / seg), len(chords) - 1)]
+    mn = ch[pattern[k % 8]] + 12
+    ramp = min(1, (at - 7.0) / 2.5) * (1 - max(0, (at - 56.0) / 3))
+    accent = 1.25 if k % 8 == 0 else 1.0
+    pluck(at, note(mn), 0.075 * ramp * accent, 0.35 * np.sin(k * 0.9))
+    k += 1; at += step
 # sub drone
-add(np.sin(2 * np.pi * note(33) * t) * env_adsr(n, 3, 3) * 0.05, 0)
+add(np.sin(2 * np.pi * note(33) * t) * env_adsr(n, 3, 3) * 0.022, 0)
 
 # --- pulse (heartbeat kick) through the "how it works" chapters
 bpm = 96; beat = 60 / bpm
@@ -50,7 +67,7 @@ kick = np.sin(2 * np.pi * (45 + 70 * np.exp(-kt * 30)) * kt) * np.exp(-kt * 9)
 b = 22.0
 while b < 53.8:
     ramp = min(1, (b - 22) / 3) * (1 - max(0, (b - 51) / 3))
-    add(kick, b, gain=0.32 * ramp)
+    add(kick, b, gain=0.2 * ramp)
     b += beat
 
 # --- whooshes (rising band-passed noise) into each transition
