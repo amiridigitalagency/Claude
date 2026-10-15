@@ -43,6 +43,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
 .res.top{border:1.5px solid rgba(217,180,108,.8)}
 .res.top .fav{background:linear-gradient(135deg,#f1d9a0,#b8893e)}
 .res.top .b1{background:linear-gradient(90deg,#f1d9a0,#c79a4b)}
+.cta{position:absolute;left:960px;top:670px;font-family:'Inter';font-weight:600;font-size:34px;letter-spacing:.02em;color:#17130b;background:linear-gradient(180deg,#f6e3b0,#d9b46c 60%,#c4974a);padding:22px 52px;border-radius:60px;white-space:nowrap;opacity:0}
 .tag{position:absolute;font-family:'Inter';font-size:20px;font-weight:600;color:#14110a;background:linear-gradient(90deg,#f1d9a0,#d9b46c);padding:6px 14px;border-radius:20px;white-space:nowrap;transform-origin:0 50%}
 .sub{font-family:'Inter';font-weight:300;font-size:36px;color:#d6d2c8;line-height:1.35}
 .desc{font-family:'Inter';font-weight:400;font-size:24px;color:var(--muted)}
@@ -53,7 +54,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
 #fx .sweep{position:absolute;left:0;top:539px;height:2px;width:1920px;background:linear-gradient(90deg,rgba(241,217,160,0),#f1d9a0 50%,rgba(241,217,160,0));transform-origin:50% 50%;opacity:0;box-shadow:0 0 24px #d9b46c}
 #fx .bars{position:absolute;left:0;width:1920px;height:0;background:#000}
 #endcard{position:absolute;inset:0}
-#endrule{position:absolute;left:760px;width:400px;top:585px;height:1.5px;background:linear-gradient(90deg,rgba(217,180,108,0),#d9b46c,rgba(217,180,108,0))}
+#endrule{position:absolute;left:760px;width:400px;top:545px;height:1.5px;background:linear-gradient(90deg,rgba(217,180,108,0),#d9b46c,rgba(217,180,108,0))}
 </style>
 <script type="importmap">
 {"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}
@@ -84,7 +85,12 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const W = 1920, H = 1080, DURATION = 62;
+const W = 1920, H = 1080, DURATION = 72.5; // design-timeline length (seconds)
+// time-warp: video seconds -> design seconds, so each scene fits its voice-over line (timeline.json)
+let WARP = [[0, 0], [DURATION, DURATION]];
+function warp(tv) {
+  for (let i = 1; i < WARP.length; i++) if (tv <= WARP[i][0] || i === WARP.length - 1) { const [v0, d0] = WARP[i - 1], [v1, d1] = WARP[i]; return d0 + (d1 - d0) * Math.min(1, Math.max(0, (tv - v0) / (v1 - v0))); }
+}
 
 /* ---------------- maths & easing ---------------- */
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -275,7 +281,7 @@ function updateMain(t) {
   let op = 1;
   if (t > 7 && t < 46) op = 0.45;
   if (t > 6.9 && t < 7.4) op = lerp(0, 0.45, prog(t, 7.0, 7.4));
-  mainMat.uniforms.uOpacity.value = op * (1 - prog(t, 61.2, 62));
+  mainMat.uniforms.uOpacity.value = op * (1 - prog(t, 71.6, 72.5));
   mainMat.uniforms.uSize.value = t > 46 ? 0.13 : 0.11;
 }
 
@@ -675,11 +681,14 @@ T('SEO works on three fronts.', 'serif', 'left:0;width:1920px;text-align:center;
   T(b, 'desc', `left:${cx - 400}px;width:800px;text-align:center;top:888px;font-size:26px`, { in: { t: 49.6 + i * 0.35, dur: 0.7, stg: 0.008, fx: 'fade' }, out: { t: 53.25, dur: 0.4, stg: 0.003, fx: 'up' } });
 });
 // --- Scene 8: outro
-T("Don't chase the algorithm.", 'sans', 'left:0;width:1920px;text-align:center;top:430px;font-size:56px;font-weight:300', { in: { t: 54.6, dur: 0.9, stg: 0.025, fx: 'rise' }, out: { t: 56.9, dur: 0.5, stg: 0.008, fx: 'up' } });
-T('Be the answer.', 'serif it gold', 'left:0;width:1920px;text-align:center;top:440px;font-size:160px;font-weight:700', { in: { t: 57.3, dur: 0.85, stg: 0.05, fx: 'slam' }, out: { t: 59.0, dur: 0.5, stg: 0.01, fx: 'blur' } });
-T('AMIRI', 'serif', 'left:0;width:1920px;text-align:center;top:440px;font-size:120px;font-weight:400;letter-spacing:.28em;padding-left:.28em', { in: { t: 59.35, dur: 1.1, stg: 0.07, fx: 'track' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
-T('DIGITAL AGENCY', 'label', 'left:0;width:1920px;text-align:center;top:612px;font-size:24px;letter-spacing:.6em;padding-left:.6em', { in: { t: 59.8, dur: 1.0, stg: 0.02, fx: 'track' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
-T('amiridigitalagency.co', 'desc', 'left:0;width:1920px;text-align:center;top:680px;font-size:26px;letter-spacing:.08em;color:#c9c2b4', { in: { t: 60.2, dur: 0.9, stg: 0.012, fx: 'fade' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
+T("Don't chase the algorithm.", 'sans', 'left:0;width:1920px;text-align:center;top:430px;font-size:56px;font-weight:300', { in: { t: 54.7, dur: 0.9, stg: 0.025, fx: 'rise' }, out: { t: 57.6, dur: 0.5, stg: 0.008, fx: 'up' } });
+T('Next time someone searches…', 'serif it', 'left:0;width:1920px;text-align:center;top:450px;font-size:72px;color:#e6dfd2', { in: { t: 58.1, dur: 0.9, stg: 0.03, fx: 'fade' }, out: { t: 60.75, dur: 0.4, stg: 0.006, fx: 'blur' } });
+T('They find you.', 'serif it gold', 'left:0;width:1920px;text-align:center;top:440px;font-size:160px;font-weight:700', { in: { t: 61.15, dur: 0.85, stg: 0.05, fx: 'slam' }, out: { t: 62.8, dur: 0.5, stg: 0.01, fx: 'blur' } });
+T('Want to be the answer?', 'serif it gold', 'left:0;width:1920px;text-align:center;top:250px;font-size:64px', { in: { t: 63.35, dur: 0.9, stg: 0.025, fx: 'rise' }, out: { t: 71.6, dur: 0.6, stg: 0, fx: 'blur' } });
+T('AMIRI', 'serif', 'left:0;width:1920px;text-align:center;top:400px;font-size:120px;font-weight:400;letter-spacing:.28em;padding-left:.28em', { in: { t: 64.2, dur: 1.1, stg: 0.07, fx: 'track' }, out: { t: 71.6, dur: 0.6, stg: 0, fx: 'blur' } });
+T('DIGITAL AGENCY', 'label', 'left:0;width:1920px;text-align:center;top:572px;font-size:24px;letter-spacing:.6em;padding-left:.6em', { in: { t: 64.6, dur: 1.0, stg: 0.02, fx: 'track' }, out: { t: 71.6, dur: 0.6, stg: 0, fx: 'blur' } });
+const ctaPill = document.createElement('div'); ctaPill.className = 'cta'; ctaPill.textContent = 'Book your free SEO strategy call'; ui.appendChild(ctaPill);
+T('amiridigitalagency.co', 'desc', 'left:0;width:1920px;text-align:center;top:800px;font-size:28px;letter-spacing:.08em;color:#d6cfc1', { in: { t: 66.4, dur: 0.9, stg: 0.012, fx: 'fade' }, out: { t: 71.6, dur: 0.6, stg: 0, fx: 'blur' } });
 const endRule = document.createElement('div'); endRule.id = 'endrule'; ui.appendChild(endRule);
 
 /* ================= FX ================= */
@@ -695,7 +704,7 @@ for (let g = 0; g < 6; g++) {
 function updateFX(t, frame) {
   const flash = Math.max(env(t, 6.75, 7.0, 7.0, 7.45), env(t, 21.75, 22.0, 22.0, 22.5) * 0.95, env(t, 45.75, 46.0, 46.0, 46.6) * 0.6);
   flashEl.style.opacity = flash;
-  const leak = Math.max(env(t, 45.4, 45.95, 46.1, 47.3), env(t, 13.6, 14.0, 14.1, 14.8) * 0.55, env(t, 56.9, 57.4, 57.6, 58.6) * 0.45);
+  const leak = Math.max(env(t, 45.4, 45.95, 46.1, 47.3), env(t, 13.6, 14.0, 14.1, 14.8) * 0.55, env(t, 60.8, 61.25, 61.5, 62.6) * 0.45);
   leakEl.style.opacity = leak; leakEl.style.transform = `translate(${Math.sin(t * 0.7) * 160}px,${Math.cos(t * 0.5) * 80}px) rotate(${t * 6}deg)`;
   const sw = prog(t, 13.55, 14.25);
   sweepEl.style.opacity = sw > 0 && sw < 1 ? Math.sin(Math.PI * sw) : 0; sweepEl.style.transform = `scaleX(${E.outExpo(sw)}) scaleY(${1 + Math.sin(Math.PI * sw) * 1.5})`;
@@ -706,15 +715,20 @@ function updateFX(t, frame) {
   let f = '';
   if (wb > 0.5) { hblurStd.setAttribute('stdDeviation', `${wb.toFixed(1)} 0`); f += 'url(#hblur) '; }
   if (zb > 0.3) f += `blur(${zb.toFixed(1)}px) `;
-  const fadeIn = prog(t, 0, 0.8), fadeOut = 1 - prog(t, 61.4, 62);
+  const fadeIn = prog(t, 0, 0.8), fadeOut = 1 - prog(t, 71.9, 72.5);
   f += `brightness(${(fadeIn * fadeOut).toFixed(3)})`;
   stage.style.filter = f;
   // cinematic letterbox breathes in during the chapters
   const bh = 64 * env(t, 22.0, 23.0, 45.6, 46.4);
   bars.forEach(b => b.style.height = bh + 'px');
   // end rule
-  const er = E.outExpo(prog(t, 59.9, 61.0)) * (1 - prog(t, 61.3, 61.9));
+  const er = E.outExpo(prog(t, 64.7, 65.8)) * (1 - prog(t, 71.6, 72.2));
   endRule.style.transform = `scaleX(${er})`; endRule.style.opacity = er;
+  const cp = E.outBack(prog(t, 65.55, 66.3)), co = clamp(prog(t, 65.5, 65.9)) * (1 - prog(t, 71.6, 72.2));
+  const glow = 0.35 + 0.25 * Math.sin(t * 2.4);
+  ctaPill.style.opacity = co; ctaPill.style.transform = `translateX(-50%) scale(${(0.85 + 0.15 * cp).toFixed(4)})`;
+  ctaPill.style.filter = cp < 0.98 ? `blur(${((1 - clamp(cp)) * 10).toFixed(1)}px)` : 'none';
+  ctaPill.style.boxShadow = `0 0 ${40 + glow * 40}px rgba(217,180,108,${glow.toFixed(3)})`;
 }
 
 /* ================= CAMERA ================= */
@@ -756,7 +770,7 @@ function camState(t) {
     const p = E.inOutSine(prog(t, 46, 54));
     pos = V(Math.sin(p * 1.4 - 0.7) * 2.2, lerp(1.8, 0.4, p), lerp(15, 12.6, p)); tgt = V(0, -0.2, 0);
   } else {
-    const p = E.inOutSine(prog(t, 54, 62));
+    const p = E.inOutSine(prog(t, 54, 72.5));
     const prevPos = V(Math.sin(0.7) * 2.2, 0.4, 12.6);
     const w = E.inOutCubic(prog(t, 54, 56));
     pos = prevPos.lerp(V(0, 0.2, lerp(15, 12, p)), w); tgt = V(0, lerp(-0.2, 0, w), 0);
@@ -773,7 +787,8 @@ function updateCamera(t) {
 }
 
 /* ================= SEEK ================= */
-window.seek = (t, frame = Math.round(t * 30)) => {
+window.seek = (tv, frame = Math.round(tv * 30)) => {
+  const t = warp(tv);
   updateCamera(t);
   updateMain(t); updateBlob(t); updateCrawl(t); updateIndex(t); updateBeam(t); updateRank(t);
   scene.updateMatrixWorld();
@@ -783,15 +798,16 @@ window.seek = (t, frame = Math.round(t * 30)) => {
   bloom.strength = 0.75 + 0.4 * env(t, 44.4, 44.9, 45.2, 46) + 0.5 * env(t, 6.4, 6.9, 7.0, 7.5);
   composer.render();
 };
-window.DURATION = DURATION;
 document.fonts.ready.then(async () => {
+  try { const tl = await (await fetch('timeline.json')).json(); WARP = tl.warp; } catch (e) { console.warn('no timeline.json, using design timing'); }
+  window.DURATION = WARP[WARP.length - 1][0];
   await Promise.all(['300 20px Inter', '400 20px Inter', '600 20px Inter', '400 20px Playfair', '700 20px Playfair', 'italic 400 20px Playfair', 'italic 700 20px Playfair'].map(f => document.fonts.load(f)));
   buildRank(); measureSEO();
   window.seek(0);
   window.READY = true;
   if (!navigator.webdriver) { // live preview when opened in a browser
     const t0 = performance.now();
-    const loop = () => { const t = ((performance.now() - t0) / 1000) % DURATION; window.seek(t); requestAnimationFrame(loop); };
+    const loop = () => { const t = ((performance.now() - t0) / 1000) % window.DURATION; window.seek(t); requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
   }
 });

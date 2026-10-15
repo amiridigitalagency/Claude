@@ -1,0 +1,24 @@
+{
+ "note": "anchor = design-timeline second (index.html) where the line should start; the renderer stretches the visuals so each line fits before the next anchor. 'say' is the spelling fed to the voice.",
+ "voice": "af_heart",
+ "segments": [
+  {"id": "01_hook", "anchor": 0.4, "say": "Right now, someone is searching for exactly what you offer. Will they find you... or your competitor?"},
+  {"id": "02_search", "anchor": 7.6, "say": "They type a few words, hit enter, and choose from the top results. Most never scroll past page one."},
+  {"id": "03a_define", "anchor": 14.4, "say": "Earning that spot is called search engine optimization."},
+  {"id": "03b_seo", "anchor": 16.7, "say": "Or, S.E.O."},
+  {"id": "03c_answer", "anchor": 19.1, "say": "It's about making your website the most relevant, trusted answer to what people search."},
+  {"id": "04_crawl", "anchor": 22.5, "say": "Here's how it works. Search engines send bots to crawl the web, following links from page to page."},
+  {"id": "05_index", "anchor": 30.6, "say": "Everything they find is read, understood, and filed in a massive index."},
+  {"id": "06_rank", "anchor": 37.4, "say": "Then, for every search, those pages are ranked."},
+  {"id": "07_q1", "anchor": 38.95, "say": "Is it relevant?"},
+  {"id": "08_q2", "anchor": 40.55, "say": "Genuinely helpful?"},
+  {"id": "09_q3", "anchor": 42.15, "say": "Do trusted sites link to it?"},
+  {"id": "10_q4", "anchor": 43.75, "say": "Is it fast on mobile?"},
+  {"id": "11_fronts", "anchor": 46.5, "say": "That's why S.E.O. works on three fronts. Your content, your site's technical health, and your reputation across the web."},
+  {"id": "12a_payoff", "anchor": 54.5, "say": "Get those right, and you stop chasing the algorithm."},
+  {"id": "12b_payoff", "anchor": 58.0, "say": "So the next time someone searches for what you offer..."},
+  {"id": "12c_payoff", "anchor": 61.2, "say": "they find you."},
+  {"id": "13a_cta", "anchor": 63.4, "say": "Want to be the answer?"},
+  {"id": "13b_cta", "anchor": 65.4, "say": "Book your free S.E.O. strategy call, with Amiri Digital Agency."}
+ ]
+}

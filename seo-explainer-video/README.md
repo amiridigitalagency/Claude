@@ -1,6 +1,6 @@
 # SEO Explained: motion video
 
-A 62-second, 1920x1080 explainer on what search engine optimization is and how it works, branded for Amiri Digital Agency.
+A ~78-second, 1920x1080 explainer with voice-over on what search engine optimization is and how it works, branded for Amiri Digital Agency.
 
 **Output:** `seo-explained.mp4`
 
@@ -15,17 +15,27 @@ A 62-second, 1920x1080 explainer on what search engine optimization is and how i
 | 30–37s | 02 Index: network nodes fly into a curved library wall, scanning beam files them | Match-cut morph, tracking shot, whip pan with motion blur |
 | 37–46s | 03 Rank: Relevance, Quality, Authority, Experience lift "Your website" to #1 | 3D result cards reorder, glow pulse |
 | 46–54s | Three fronts: On-page, Technical, Off-page | Starfield converges into spheres that morph into a document, gear and chain links |
-| 54–62s | "Don't chase the algorithm. Be the answer." → Amiri end card | Particles form a rotating ring, light leak, fade |
+| 54–62s | "Don't chase the algorithm. Be the answer." → Amiri end card | Particles form a rotating ring, lig## Voice-over
+
+Narrated with the open-source Kokoro-82M voice `af_heart` (fp16 ONNX, espeak-ng phonemes). The script lives in
+`vo_script.json`; each line has an *anchor* on the design timeline in `index.html`. `build_timeline.py` writes
+`timeline.json`, a time-warp that stretches each scene just enough to fit its line, so visuals and voice stay in sync.
+
+Story structure: **hook** (someone is searching for what you offer, will they find you?), explanation
+(what SEO is, crawl, index, rank, three fronts), **payoff** (…they find you) and **CTA** (book a free SEO strategy call).
 
 ## Rebuild
 
 ```bash
 npm install
-node render.js out/ 4 30          # renders seg_*.mp4 + segments.txt into out/
-python3 soundtrack.py out/soundtrack_raw.wav
-ffmpeg -i out/soundtrack_raw.wav -af "highpass=f=30,loudnorm=I=-14:TP=-1.0:LRA=9" -ar 48000 out/soundtrack.wav
-ffmpeg -f concat -safe 0 -i out/segments.txt -i out/soundtrack.wav -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart seo-explained.mp4
+pip install kokoro-onnx soundfile
+python3 tts.py <kokoro-fp16.onnx> <voices.npz> af_heart en-us out/vo 1.0   # voice lines + vo_durations.json
+python3 build_timeline.py out/vo/vo_durations.json                          # timeline.json
+node render.js out/ 4 30                                                    # seg_*.mp4 + segments.txt
+python3 soundtrack.py timeline.json out/vo out/mix_raw.wav                  # music, SFX and ducked voice
+ffmpeg -i out/mix_raw.wav -af "highpass=f=30,loudnorm=I=-14:TP=-1.0:LRA=11" -ar 48000 out/mix.wav
+ffmpeg -f concat -safe 0 -i out/segments.txt -i out/mix.wav -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart seo-explained.mp4
 ```
 
-Open `index.html` through any local web server to preview it live in a browser.
-Stills for review: `node render.js --stills out/ 5 20 40`.
+The Kokoro weights are not in this repo. `voices.npz` is built from the `voices/*.bin` style vectors in the `kokoro-js` npm package.
+Open `index.html` through any local web server to preview it live. Stills for review: `node render.js --stills out/ 5 20 40`.
