@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SEO Explained</title>
+<style>
+@font-face{font-family:'Inter';font-weight:300;src:url(node_modules/@fontsource/inter/files/inter-latin-300-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:400;src:url(node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:600;src:url(node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:800;src:url(node_modules/@fontsource/inter/files/inter-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:'Playfair';font-weight:400;src:url(node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Playfair';font-weight:700;src:url(node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Playfair';font-weight:400;font-style:italic;src:url(node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-italic.woff2) format('woff2')}
+@font-face{font-family:'Playfair';font-weight:700;font-style:italic;src:url(node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-italic.woff2) format('woff2')}
+:root{--bg:#06070b;--ivory:#f3ede2;--gold:#d9b46c;--gold2:#f1d9a0;--slate:#8ea3c4;--muted:#9aa0ad}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg)}
+#stage{position:absolute;inset:0;overflow:hidden;background:var(--bg)}
+#gl{position:absolute;inset:0;width:1920px;height:1080px;display:block}
+#ui,#fx{position:absolute;inset:0;pointer-events:none}
+.txt{position:absolute;color:var(--ivory);white-space:nowrap;line-height:1.1}
+.txt .w{display:inline-block;white-space:nowrap}
+.txt .c{display:inline-block;will-change:transform,opacity;transform-origin:50% 70%}
+.sans{font-family:'Inter',sans-serif}
+.serif{font-family:'Playfair',serif}
+.it{font-style:italic}
+.gold .c{background:linear-gradient(180deg,#f6e3b0 0%,#d9b46c 55%,#b8893e 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.muted{color:var(--muted)}
+.label{font-family:'Inter';font-weight:600;font-size:22px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.center{left:0;width:1920px;text-align:center}
+/* search scene */
+#searchWrap{position:absolute;left:0;top:0;width:1920px;height:1080px;perspective:1600px}
+#search{position:absolute;left:460px;top:250px;width:1000px;height:96px;border-radius:48px;background:rgba(20,22,30,.82);border:1.5px solid rgba(217,180,108,.55);box-shadow:0 0 60px rgba(217,180,108,.18),inset 0 0 30px rgba(255,255,255,.03);display:flex;align-items:center;padding:0 40px;transform-origin:50% 50%}
+#search .glass{width:30px;height:30px;border:3px solid var(--gold);border-radius:50%;position:relative;margin-right:28px;flex:none}
+#search .glass:after{content:'';position:absolute;width:3px;height:14px;background:var(--gold);right:-7px;bottom:-11px;transform:rotate(-45deg)}
+#query{font-family:'Inter';font-size:36px;font-weight:400;color:var(--ivory);white-space:pre}
+#caret{display:inline-block;width:3px;height:40px;background:var(--gold);margin-left:4px;vertical-align:middle}
+.res{position:absolute;left:460px;width:1000px;height:104px;border-radius:18px;background:rgba(18,20,28,.78);border:1px solid rgba(255,255,255,.07);transform-origin:50% 0}
+.res .fav{position:absolute;left:28px;top:30px;width:44px;height:44px;border-radius:50%;background:#2a2f3c}
+.res .b1{position:absolute;left:96px;top:26px;height:16px;border-radius:8px;background:#3a4052}
+.res .b2{position:absolute;left:96px;top:54px;height:10px;border-radius:5px;background:#2a2f3c}
+.res .b3{position:absolute;left:96px;top:74px;height:10px;border-radius:5px;background:#2a2f3c}
+.res.top{border:1.5px solid rgba(217,180,108,.8)}
+.res.top .fav{background:linear-gradient(135deg,#f1d9a0,#b8893e)}
+.res.top .b1{background:linear-gradient(90deg,#f1d9a0,#c79a4b)}
+.tag{position:absolute;font-family:'Inter';font-size:20px;font-weight:600;color:#14110a;background:linear-gradient(90deg,#f1d9a0,#d9b46c);padding:6px 14px;border-radius:20px;white-space:nowrap;transform-origin:0 50%}
+.sub{font-family:'Inter';font-weight:300;font-size:36px;color:#d6d2c8;line-height:1.35}
+.desc{font-family:'Inter';font-weight:400;font-size:24px;color:var(--muted)}
+#fx .vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(0,0,0,.62) 100%)}
+#fx .grain{position:absolute;inset:-50px;opacity:.07;mix-blend-mode:overlay}
+#fx .flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#fff8e8 0%,#f1d9a0 40%,rgba(217,180,108,.0) 100%);opacity:0}
+#fx .leak{position:absolute;width:2400px;height:1600px;left:-240px;top:-260px;background:radial-gradient(ellipse at 30% 40%,rgba(255,170,80,.9) 0%,rgba(255,120,40,.35) 30%,rgba(0,0,0,0) 62%),radial-gradient(ellipse at 75% 60%,rgba(255,220,160,.7) 0%,rgba(0,0,0,0) 45%);mix-blend-mode:screen;opacity:0}
+#fx .sweep{position:absolute;left:0;top:539px;height:2px;width:1920px;background:linear-gradient(90deg,rgba(241,217,160,0),#f1d9a0 50%,rgba(241,217,160,0));transform-origin:50% 50%;opacity:0;box-shadow:0 0 24px #d9b46c}
+#fx .bars{position:absolute;left:0;width:1920px;height:0;background:#000}
+#endcard{position:absolute;inset:0}
+#endrule{position:absolute;left:760px;width:400px;top:585px;height:1.5px;background:linear-gradient(90deg,rgba(217,180,108,0),#d9b46c,rgba(217,180,108,0))}
+</style>
+<script type="importmap">
+{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}
+</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <div id="ui"></div>
+  <div id="fx">
+    <div class="leak"></div>
+    <div class="flash"></div>
+    <div class="sweep"></div>
+    <div class="vig"></div>
+    <div class="grain"></div>
+    <div class="bars" style="top:0"></div>
+    <div class="bars" style="bottom:0"></div>
+  </div>
+</div>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="hblur" x="-10%" y="0" width="120%" height="100%"><feGaussianBlur id="hblurStd" stdDeviation="0 0"/></filter>
+</svg>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const W = 1920, H = 1080, DURATION = 62;
+
+/* ---------------- maths & easing ---------------- */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  lin: x => x,
+  outExpo: x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x),
+  inExpo: x => x <= 0 ? 0 : Math.pow(2, 10 * x - 10),
+  inOutExpo: x => x <= 0 ? 0 : x >= 1 ? 1 : x < .5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2,
+  outCubic: x => 1 - Math.pow(1 - x, 3),
+  inCubic: x => x * x * x,
+  inOutCubic: x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  inOutSine: x => -(Math.cos(Math.PI * x) - 1) / 2,
+  outBack: x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); },
+  outQuint: x => 1 - Math.pow(1 - x, 5),
+};
+// envelope: fade in over [a,b], hold, fade out over [c,d]
+const env = (t, a, b, c, d) => t < a || t > d ? 0 : t < b ? E.inOutSine(prog(t, a, b)) : t > c ? 1 - E.inOutSine(prog(t, c, d)) : 1;
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rand = mulberry32(20261015);
+const hash = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const gauss = () => { let u = 0, v = 0; while (!u) u = rand(); while (!v) v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+
+/* ---------------- renderer ---------------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H, false);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06070b);
+scene.fog = new THREE.FogExp2(0x06070b, 0.018);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 400);
+const key = new THREE.DirectionalLight(0xfff1d6, 2.2); key.position.set(5, 8, 10); scene.add(key);
+scene.add(new THREE.AmbientLight(0x8090b0, 0.35));
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.75, 0.5, 0.7);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+const GOLD = new THREE.Color(0xd9b46c), GOLD2 = new THREE.Color(0xf6dfa6), IVORY = new THREE.Color(0xf3ede2), SLATE = new THREE.Color(0x6f86ad), DIM = new THREE.Color(0x2b3346);
+
+/* soft-point shader shared by particle systems */
+function pointsMaterial(size) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uSize: { value: size }, uOpacity: { value: 1 } },
+    vertexShader: `attribute vec3 color; attribute float aSize; varying vec3 vColor; uniform float uSize;
+      void main(){ vColor=color; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_PointSize=uSize*aSize*(300.0/-mv.z); gl_Position=projectionMatrix*mv; }`,
+    fragmentShader: `varying vec3 vColor; uniform float uOpacity;
+      void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(0.5,0.0,d); a*=a; gl_FragColor=vec4(vColor*a*uOpacity,1.0); }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  });
+}
+
+/* ================= MAIN PARTICLE SYSTEM (morphing formations) ================= */
+const N = 6000;
+const forms = {};
+const mk = () => new Float32Array(N * 3);
+// galaxy
+forms.galaxy = mk();
+for (let i = 0; i < N; i++) {
+  const arm = i % 3, r = Math.pow(rand(), 0.7) * 14 + 0.3;
+  const a = arm * 2 * Math.PI / 3 + r * 0.42 + gauss() * 0.22;
+  forms.galaxy.set([Math.cos(a) * r + gauss() * 0.3, gauss() * 0.5 * (1 - r / 16), Math.sin(a) * r + gauss() * 0.3], i * 3);
+}
+// globe (fibonacci sphere)
+forms.globe = mk();
+for (let i = 0; i < N; i++) {
+  const y = 1 - (i / (N - 1)) * 2, rr = Math.sqrt(1 - y * y), th = i * 2.399963;
+  const R = 4.2 + gauss() * 0.04;
+  forms.globe.set([Math.cos(th) * rr * R, y * R, Math.sin(th) * rr * R], i * 3);
+}
+// starfield
+forms.stars = mk();
+for (let i = 0; i < N; i++) forms.stars.set([(rand() - .5) * 110, (rand() - .5) * 60, -rand() * 80 + 14], i * 3);
+// pillars: three clusters
+const PC = [-4.6, 0, 4.6];
+forms.pSphere = mk(); forms.pShape = mk();
+const pLocalSphere = mk(), pLocalShape = mk();
+for (let i = 0; i < N; i++) {
+  const g = i % 3, k = Math.floor(i / 3), n = N / 3;
+  const y = 1 - (k / (n - 1)) * 2, rr = Math.sqrt(1 - y * y), th = k * 2.399963, R = 1.35;
+  pLocalSphere.set([Math.cos(th) * rr * R, y * R, Math.sin(th) * rr * R], i * 3);
+  let p;
+  const u = rand(), v = rand();
+  if (g === 0) { // document with text lines
+    const w = 1.9, h = 2.5;
+    if (u < 0.45) { // outline
+      const s = v * 2 * (w + h); let x, yy;
+      if (s < w) { x = -w / 2 + s; yy = h / 2; } else if (s < w + h) { x = w / 2; yy = h / 2 - (s - w); } else if (s < 2 * w + h) { x = w / 2 - (s - w - h); yy = -h / 2; } else { x = -w / 2; yy = -h / 2 + (s - 2 * w - h); }
+      p = [x, yy, gauss() * 0.02];
+    } else if (u < 0.55) { p = [-0.6 + v * 1.2, 0.85, 0]; } // heading
+    else { const line = Math.floor(rand() * 6), len = line === 5 ? 0.8 : 1.4; p = [-0.7 + v * len, 0.45 - line * 0.28, 0]; }
+  } else if (g === 1) { // gear
+    if (u < 0.55) { const a = v * Math.PI * 2, r = 1.0 + (rand() - .5) * 0.18; p = [Math.cos(a) * r, Math.sin(a) * r, (rand() - .5) * 0.25]; }
+    else if (u < 0.85) { const tooth = Math.floor(rand() * 10), a = tooth / 10 * Math.PI * 2 + (rand() - .5) * 0.22, r = 1.1 + rand() * 0.32; p = [Math.cos(a) * r, Math.sin(a) * r, (rand() - .5) * 0.25]; }
+    else { const a = v * Math.PI * 2, r = 0.36; p = [Math.cos(a) * r, Math.sin(a) * r, (rand() - .5) * 0.2]; }
+  } else { // interlocked chain links
+    const a = v * Math.PI * 2, b = rand() * Math.PI * 2, R1 = 0.72, r1 = 0.1;
+    const cx = Math.cos(a) * (R1 + Math.cos(b) * r1), cy = Math.sin(a) * (R1 + Math.cos(b) * r1), cz = Math.sin(b) * r1;
+    p = u < 0.5 ? [cx - 0.45, cy, cz] : [cx + 0.45, cz, cy];
+  }
+  pLocalShape.set(p, i * 3);
+}
+// ring
+forms.ring = mk();
+for (let i = 0; i < N; i++) {
+  const a = rand() * Math.PI * 2, R = 4.6 + gauss() * 0.16 + (rand() < 0.15 ? gauss() * 0.7 : 0);
+  forms.ring.set([Math.cos(a) * R, gauss() * 0.08, Math.sin(a) * R], i * 3);
+}
+const delays = new Float32Array(N), swirl = new Float32Array(N * 3);
+for (let i = 0; i < N; i++) { delays[i] = rand(); swirl.set([gauss(), gauss(), gauss()], i * 3); }
+
+const mainGeo = new THREE.BufferGeometry();
+const mainPos = mk(), mainCol = mk(), mainSize = new Float32Array(N);
+for (let i = 0; i < N; i++) {
+  const r = rand(); const c = r < 0.55 ? GOLD : r < 0.85 ? IVORY : SLATE;
+  const b = 0.55 + rand() * 0.6;
+  mainCol.set([c.r * b, c.g * b, c.b * b], i * 3); mainSize[i] = 0.5 + Math.pow(rand(), 3) * 2.2;
+}
+mainGeo.setAttribute('position', new THREE.BufferAttribute(mainPos, 3));
+mainGeo.setAttribute('color', new THREE.BufferAttribute(mainCol, 3));
+mainGeo.setAttribute('aSize', new THREE.BufferAttribute(mainSize, 1));
+const mainMat = pointsMaterial(0.11);
+const mainPts = new THREE.Points(mainGeo, mainMat); mainPts.frustumCulled = false; scene.add(mainPts);
+
+// sample a formation, with time-dependent transforms (rotation) applied
+const _v = [0, 0, 0];
+function sampleForm(name, i, t) {
+  if (name === 'pSphere' || name === 'pShape') {
+    const src = name === 'pSphere' ? pLocalSphere : pLocalShape, g = i % 3;
+    let x = src[i * 3], y = src[i * 3 + 1], z = src[i * 3 + 2];
+    const a = (t - 46) * 0.55 + g * 0.7, ca = Math.cos(a), sa = Math.sin(a);
+    const tilt = name === 'pShape' ? Math.sin(t * 0.8 + g) * 0.12 : 0;
+    const rx = x * ca + z * sa, rz = -x * sa + z * ca;
+    _v[0] = rx + PC[g]; _v[1] = y + tilt * rx - 0.15; _v[2] = rz; return _v;
+  }
+  if (name === 'galaxy') {
+    const x = forms.galaxy[i * 3], y = forms.galaxy[i * 3 + 1], z = forms.galaxy[i * 3 + 2];
+    const r = Math.hypot(x, z), a = t * (0.12 + 0.6 / (r + 2)), ca = Math.cos(a), sa = Math.sin(a);
+    _v[0] = x * ca - z * sa; _v[1] = y; _v[2] = x * sa + z * ca; return _v;
+  }
+  if (name === 'globe') {
+    const x = forms.globe[i * 3], y = forms.globe[i * 3 + 1], z = forms.globe[i * 3 + 2];
+    const a = t * 0.35, ca = Math.cos(a), sa = Math.sin(a);
+    _v[0] = x * ca - z * sa; _v[1] = y; _v[2] = x * sa + z * ca; return _v;
+  }
+  if (name === 'stars') {
+    _v[0] = forms.stars[i * 3] + Math.sin(t * 0.1 + i) * 0.3; _v[1] = forms.stars[i * 3 + 1]; _v[2] = forms.stars[i * 3 + 2]; return _v;
+  }
+  if (name === 'ring') {
+    const x = forms.ring[i * 3], y = forms.ring[i * 3 + 1], z = forms.ring[i * 3 + 2];
+    const a = t * 0.3, ca = Math.cos(a), sa = Math.sin(a);
+    let rx = x * ca - z * sa, rz = x * sa + z * ca;
+    const tl = 1.12, ct = Math.cos(tl), st = Math.sin(tl); // tilt toward camera
+    _v[0] = rx; _v[1] = y * ct - rz * st; _v[2] = y * st + rz * ct; return _v;
+  }
+}
+const morphs = [ // [t0, t1, from, to, swirlAmt]
+  [0, 0, 'galaxy', 'galaxy', 0],
+  [3.6, 6.2, 'galaxy', 'globe', 2.5],
+  [7.0, 7.6, 'globe', 'stars', 0],
+  [46.0, 48.4, 'stars', 'pSphere', 3],
+  [48.6, 50.4, 'pSphere', 'pShape', 0.8],
+  [53.8, 56.0, 'pShape', 'ring', 2.2],
+];
+function updateMain(t) {
+  let m = morphs[0];
+  for (const s of morphs) if (t >= s[0]) m = s;
+  const [t0, t1, A, B, sw] = m, span = Math.max(t1 - t0, 1e-3), spread = 0.4;
+  for (let i = 0; i < N; i++) {
+    const lp = t1 <= t0 ? 1 : clamp((prog(t, t0, t1) - delays[i] * spread) / (1 - spread));
+    const p = E.inOutCubic(lp);
+    const a = sampleForm(A, i, t); const ax = a[0], ay = a[1], az = a[2];
+    const b = sampleForm(B, i, t);
+    const lift = Math.sin(Math.PI * p) * sw;
+    mainPos[i * 3] = lerp(ax, b[0], p) + swirl[i * 3] * lift;
+    mainPos[i * 3 + 1] = lerp(ay, b[1], p) + swirl[i * 3 + 1] * lift;
+    mainPos[i * 3 + 2] = lerp(az, b[2], p) + swirl[i * 3 + 2] * lift;
+  }
+  mainGeo.attributes.position.needsUpdate = true;
+  let op = 1;
+  if (t > 7 && t < 46) op = 0.45;
+  if (t > 6.9 && t < 7.4) op = lerp(0, 0.45, prog(t, 7.0, 7.4));
+  mainMat.uniforms.uOpacity.value = op * (1 - prog(t, 61.2, 62));
+  mainMat.uniforms.uSize.value = t > 46 ? 0.13 : 0.11;
+}
+
+/* ================= BLOB (definition scene) ================= */
+const blobGeo = new THREE.SphereGeometry(1, 180, 130);
+const blobBase = blobGeo.attributes.position.array.slice();
+const blobMat = new THREE.MeshPhysicalMaterial({ color: 0xd9b46c, metalness: 1, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.15, envMapIntensity: 0.85 });
+const blob = new THREE.Mesh(blobGeo, blobMat); scene.add(blob);
+function updateBlob(t) {
+  const vis = t > 18.2 && t < 22.05; blob.visible = vis; if (!vis) return;
+  const appear = E.outBack(prog(t, 18.3, 19.4));
+  const rush = E.inExpo(prog(t, 21.2, 22.0));
+  const s = 1.75 * appear * (1 + rush * 0.6);
+  blob.scale.setScalar(Math.max(s, 0.001));
+  blob.position.set(5.3, 0.1, 0);
+  blob.rotation.set(t * 0.2, t * 0.3, 0);
+  const amp = 0.16 + 0.1 * Math.sin(t * 0.9) + rush * 0.5, f = 1.6 + rush * 2, tt = t * 0.9;
+  const pos = blobGeo.attributes.position.array;
+  for (let i = 0; i < pos.length; i += 3) {
+    const x = blobBase[i], y = blobBase[i + 1], z = blobBase[i + 2];
+    const n = Math.sin(x * f + tt) * Math.sin(y * f * 1.13 + tt * 0.8) * Math.sin(z * f * 0.91 + tt * 1.2)
+      + 0.5 * Math.sin(x * f * 2.1 - tt * 1.3 + 2) * Math.sin(y * f * 2.3 + tt) * Math.sin(z * f * 1.9 + 1);
+    const d = 1 + amp * n;
+    pos[i] = x * d; pos[i + 1] = y * d; pos[i + 2] = z * d;
+  }
+  blobGeo.attributes.position.needsUpdate = true;
+  blobGeo.computeVertexNormals();
+}
+
+/* ================= CRAWL NETWORK ================= */
+const NN = 46;
+const nodes = [];
+nodes.push(new THREE.Vector3(0, 0, 0));
+while (nodes.length < NN) {
+  const v = new THREE.Vector3(gauss() * 4.2, gauss() * 2.4, gauss() * 3.4);
+  if (v.length() < 7.5 && nodes.every(n => n.distanceTo(v) > 1.25)) nodes.push(v);
+}
+const edgeSet = new Set(), edges = [];
+nodes.forEach((a, i) => {
+  const near = nodes.map((b, j) => [a.distanceTo(b), j]).filter(x => x[1] !== i).sort((p, q) => p[0] - q[0]).slice(0, 3);
+  near.forEach(([, j]) => { const k = i < j ? i + '_' + j : j + '_' + i; if (!edgeSet.has(k)) { edgeSet.add(k); edges.push([Math.min(i, j), Math.max(i, j)]); } });
+});
+// BFS discovery times from node 0
+const adj = nodes.map(() => []); edges.forEach(([a, b], k) => { adj[a].push([b, k]); adj[b].push([a, k]); });
+const litT = new Array(NN).fill(Infinity), parentEdge = new Array(NN).fill(-1), parent = new Array(NN).fill(-1);
+litT[0] = 23.0; const q = [0];
+while (q.length) { const a = q.shift(); for (const [b, k] of adj[a]) if (litT[b] === Infinity) { litT[b] = litT[a] + 0.55 + hash(b) * 0.5; parent[b] = a; parentEdge[b] = k; q.push(b); } }
+// connect stragglers if any
+for (let i = 0; i < NN; i++) if (litT[i] === Infinity) litT[i] = 28;
+const crawl = new THREE.Group(); scene.add(crawl);
+const nodeMesh = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.17, 3), new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }), NN);
+crawl.add(nodeMesh);
+const edgeMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.018, 0.018, 1, 6, 1, true), new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false, transparent: true }), edges.length);
+crawl.add(edgeMesh);
+const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _p = new THREE.Vector3(), _c = new THREE.Color(), UP = new THREE.Vector3(0, 1, 0);
+edges.forEach(([a, b], k) => {
+  const A = nodes[a], B = nodes[b], d = B.clone().sub(A);
+  _q.setFromUnitVectors(UP, d.clone().normalize());
+  _m.compose(A.clone().add(B).multiplyScalar(.5), _q, new THREE.Vector3(1, d.length(), 1));
+  edgeMesh.setMatrixAt(k, _m);
+});
+const pulseGeo = new THREE.BufferGeometry(), pulsePos = new Float32Array(NN * 3), pulseCol = new Float32Array(NN * 3), pulseSize = new Float32Array(NN).fill(1);
+pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
+pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseCol, 3));
+pulseGeo.setAttribute('aSize', new THREE.BufferAttribute(pulseSize, 1));
+const pulsePts = new THREE.Points(pulseGeo, pointsMaterial(1.6)); pulsePts.frustumCulled = false; crawl.add(pulsePts);
+const edgeLit = new Float32Array(edges.length);
+function updateCrawl(t) {
+  const vis = t > 21.95 && t < 32.5; crawl.visible = vis; if (!vis) return;
+  const fadeOut = 1 - prog(t, 30.0, 31.6);
+  edgeLit.fill(0);
+  for (let i = 0; i < NN; i++) {
+    const pe = parentEdge[i];
+    // pulse travelling from parent to i
+    let pp = -1;
+    if (pe >= 0) {
+      const t0 = litT[parent[i]], t1 = litT[i];
+      pp = prog(t, t0, t1);
+      edgeLit[pe] = Math.max(edgeLit[pe], E.outCubic(pp));
+      const A = nodes[parent[i]], B = nodes[i];
+      const e = E.inOutSine(pp);
+      pulsePos.set([lerp(A.x, B.x, e), lerp(A.y, B.y, e), lerp(A.z, B.z, e)], i * 3);
+      const on = pp > 0 && pp < 1 ? Math.sin(Math.PI * pp) : 0;
+      pulseCol.set([1.3 * on * fadeOut, 1.1 * on * fadeOut, 0.75 * on * fadeOut], i * 3);
+    } else { pulseCol.set([0, 0, 0], i * 3); }
+    const lit = prog(t, litT[i], litT[i] + 0.35);
+    const pop = lit > 0 && lit < 1 ? Math.sin(Math.PI * lit) * 0.9 : 0;
+    const appear = E.outBack(prog(t, 22.1 + hash(i + 9) * 0.9, 22.9 + hash(i + 9) * 0.9));
+    const sc = (i === 0 ? 1.7 : 1) * (appear * (1 + pop)) * (1 + 0.35 * lit) * fadeOut + 1e-4;
+    _m.compose(nodes[i], _q.identity(), _s.setScalar(sc)); nodeMesh.setMatrixAt(i, _m);
+    _c.copy(DIM).lerp(GOLD2, lit); _c.multiplyScalar(lit > 0 ? 1.0 + pop * 0.8 : 1.3);
+    nodeMesh.setColorAt(i, _c);
+  }
+  pulseGeo.attributes.position.needsUpdate = true; pulseGeo.attributes.color.needsUpdate = true;
+  nodeMesh.instanceMatrix.needsUpdate = true; nodeMesh.instanceColor.needsUpdate = true;
+  const eAppear = prog(t, 22.3, 23.3);
+  edges.forEach((e, k) => { _c.copy(SLATE).multiplyScalar(0.35 * eAppear).lerp(GOLD, edgeLit[k]); _c.multiplyScalar(fadeOut * (0.8 + edgeLit[k] * 0.2)); edgeMesh.setColorAt(k, _c); });
+  edgeMesh.instanceColor.needsUpdate = true;
+  crawl.rotation.y = (t - 22) * 0.04;
+}
+
+/* ================= INDEX WALL ================= */
+const COLS = 12, ROWS = 5, NK = COLS * ROWS;
+function cardTexture() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 180; const g = c.getContext('2d');
+  g.fillStyle = '#1a1d27'; g.fillRect(0, 0, 256, 180);
+  g.fillStyle = '#c9b38a'; g.fillRect(22, 24, 110, 14);
+  g.fillStyle = '#5c6478'; for (let i = 0; i < 5; i++) g.fillRect(22, 56 + i * 22, i === 4 ? 120 : 210, 9);
+  g.strokeStyle = '#d9b46c'; g.lineWidth = 4; g.strokeRect(2, 2, 252, 176);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 4; return tx;
+}
+const cardMat = new THREE.MeshStandardMaterial({ map: cardTexture(), metalness: 0.35, roughness: 0.35, emissive: 0xffffff, emissiveIntensity: 0 });
+const cardMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1.2, 0.85, 0.05), cardMat, NK); scene.add(cardMesh);
+const kStart = [], kEnd = [], kRot = [];
+for (let k = 0; k < NK; k++) {
+  const col = k % COLS, row = Math.floor(k / COLS);
+  const x = (col - (COLS - 1) / 2) * 1.5, y = ((ROWS - 1) / 2 - row) * 1.12 + 2.0;
+  const z = -Math.pow(x / 9, 2) * 3.2; // curved wall
+  kEnd.push(new THREE.Vector3(x, y, z));
+  kStart.push(k < NN ? nodes[k].clone() : new THREE.Vector3(gauss() * 10, gauss() * 6, -8 - rand() * 12));
+  kRot.push([gauss() * 2, gauss() * 2, gauss() * 2]);
+}
+const _e = new THREE.Euler();
+function updateIndex(t) {
+  const vis = t > 29.9 && t < 37.6; cardMesh.visible = vis; if (!vis) return;
+  const scanX = lerp(-11, 11, E.inOutSine(prog(t, 33.2, 36.0)));
+  for (let k = 0; k < NK; k++) {
+    const col = k % COLS, row = Math.floor(k / COLS);
+    const d = (k < NN ? 0 : 0.5) + hash(k + 3) * 0.9 + col * 0.05;
+    const p = E.inOutCubic(prog(t, 30.0 + d, 31.7 + d));
+    const A = kStart[k], B = kEnd[k];
+    _p.set(lerp(A.x, B.x, p), lerp(A.y, B.y, p) + Math.sin(Math.PI * p) * 1.2, lerp(A.z, B.z, p) + Math.sin(Math.PI * p) * 2);
+    const yaw = Math.atan2(-B.x, 9 * 3) * 0.6;
+    _e.set(kRot[k][0] * (1 - p), kRot[k][1] * (1 - p) + yaw * p, kRot[k][2] * (1 - p));
+    _q.setFromEuler(_e);
+    const sc = Math.max(p, k < NN ? 0.25 : 0.001) * (1 - E.inCubic(prog(t, 36.9, 37.5)) * 0.0);
+    _m.compose(_p, _q, _s.setScalar(sc)); cardMesh.setMatrixAt(k, _m);
+    const dx = Math.abs(B.x - scanX), hit = Math.exp(-dx * dx * 0.6);
+    const filed = B.x < scanX ? 1 : 0;
+    _c.setRGB(1, 1, 1).lerp(GOLD2, Math.max(hit, filed * 0.25)).multiplyScalar(0.85 + hit * 1.6);
+    cardMesh.setColorAt(k, _c);
+  }
+  cardMesh.instanceMatrix.needsUpdate = true; cardMesh.instanceColor.needsUpdate = true;
+}
+// scanning beam
+const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 9), new THREE.MeshBasicMaterial({ color: 0xf6dfa6, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+scene.add(beam);
+function updateBeam(t) {
+  const o = env(t, 33.0, 33.4, 35.8, 36.3); beam.visible = o > 0; if (!o) return;
+  const x = lerp(-11, 11, E.inOutSine(prog(t, 33.2, 36.0)));
+  beam.position.set(x, 2.0, -Math.pow(x / 9, 2) * 3.2 + 0.3); beam.material.opacity = o * 0.9; beam.material.color.setRGB(2, 1.7, 1.1);
+}
+
+/* ================= RANK CARDS ================= */
+const RX = 42.6; // world x of rank group
+const rankGroup = new THREE.Group(); rankGroup.position.set(RX, 0.35, 0); rankGroup.rotation.set(0.06, -0.32, 0.0); scene.add(rankGroup);
+function resultTexture(gold) {
+  const c = document.createElement('canvas'); c.width = 1440; c.height = 180; const g = c.getContext('2d');
+  const r = 36; g.beginPath(); g.roundRect(6, 6, 1428, 168, r);
+  g.fillStyle = gold ? 'rgba(40,33,20,0.96)' : 'rgba(22,25,34,0.94)'; g.fill();
+  g.lineWidth = gold ? 6 : 2; g.strokeStyle = gold ? '#e3c27f' : 'rgba(255,255,255,0.12)'; g.stroke();
+  const grad = g.createLinearGradient(0, 0, 0, 180); grad.addColorStop(0, '#f6e3b0'); grad.addColorStop(1, '#b8893e');
+  g.beginPath(); g.arc(90, 90, 36, 0, Math.PI * 2); g.fillStyle = gold ? grad : '#2c3242'; g.fill();
+  if (gold) {
+    g.font = '600 46px Inter'; g.fillStyle = '#f6e3b0'; g.fillText('Your website', 156, 80);
+    g.font = '400 30px Inter'; g.fillStyle = '#b9a47e'; g.fillText('yourwebsite.com  ·  The answer you were searching for', 156, 128);
+  } else {
+    g.fillStyle = '#3d4456'; g.beginPath(); g.roundRect(156, 52, 520 + Math.random() * 0, 26, 13); g.fill();
+    g.fillStyle = '#2c3242'; g.beginPath(); g.roundRect(156, 100, 900, 16, 8); g.fill(); g.beginPath(); g.roundRect(156, 128, 640, 16, 8); g.fill();
+  }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 8; return tx;
+}
+function numTexture(n) {
+  const c = document.createElement('canvas'); c.width = 200; c.height = 200; const g = c.getContext('2d');
+  g.font = '700 120px Playfair'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = n === 1 ? '#e3c27f' : 'rgba(243,237,226,0.35)'; g.fillText(String(n), 100, 110);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx;
+}
+const RN = 6, SLOT = i => 2.6 - i * 1.04;
+const rankCards = [], rankNums = [];
+let rankBuilt = false;
+const glowTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128); gr.addColorStop(0, 'rgba(255,220,150,1)'); gr.addColorStop(0.4, 'rgba(217,180,108,0.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })();
+const rankGlow = new THREE.Mesh(new THREE.PlaneGeometry(10, 3.2), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+rankGroup.add(rankGlow);
+function buildRank() { // after fonts load
+  for (let i = 0; i < RN; i++) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 0.9), new THREE.MeshBasicMaterial({ map: resultTexture(i === 0), transparent: true, toneMapped: i !== 0 }));
+    rankGroup.add(m); rankCards.push(m);
+    const nmesh = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), new THREE.MeshBasicMaterial({ map: numTexture(i + 1), transparent: true }));
+    nmesh.position.set(-4.25, SLOT(i), 0); rankGroup.add(nmesh); rankNums.push(nmesh);
+  }
+  rankBuilt = true;
+}
+// card 0 = gold "your website". order steps: gold moves 5 -> 3 -> 2 -> 1 -> 0
+const HITS = [39.3, 40.9, 42.5, 44.1], MOVES = [[5, 3], [3, 2], [2, 1], [1, 0]], MOVE_DUR = 0.8;
+const orders = [[1, 2, 3, 4, 5, 0]];
+MOVES.forEach(([a, b]) => { const o = orders[orders.length - 1].slice(); const g = o.splice(a, 1)[0]; o.splice(b, 0, g); orders.push(o); });
+function updateRank(t) {
+  const vis = t > 36.4 && t < 46.2; rankGroup.visible = vis && rankBuilt; if (!rankGroup.visible) return;
+  let step = 0; for (let s = 0; s < HITS.length; s++) if (t >= HITS[s]) step = s + 1;
+  const prev = orders[Math.max(step - 1, 0)], cur = orders[step];
+  const p = step === 0 ? 1 : E.inOutCubic(prog(t, HITS[step - 1], HITS[step - 1] + MOVE_DUR));
+  for (let c = 0; c < RN; c++) {
+    const s0 = prev.indexOf(c), s1 = cur.indexOf(c);
+    const y = lerp(SLOT(s0), SLOT(s1), p);
+    const lift = c === 0 && s0 !== s1 ? Math.sin(Math.PI * p) * 0.9 : 0;
+    const appear = E.outExpo(prog(t, 37.1 + s1 * 0.09, 38.1 + s1 * 0.09));
+    const m = rankCards[c];
+    m.position.set(lerp(3, 0, appear) + (c === 0 ? lift * -0.3 : 0), y, lift + (c === 0 ? 0.05 : 0));
+    m.material.opacity = appear;
+    const sc = c === 0 ? 1 + lift * 0.06 + 0.04 * env(t, 44.6, 45.0, 45.4, 46) : 1;
+    m.scale.setScalar(sc);
+  }
+  rankNums.forEach((n, i) => { n.material.opacity = E.outExpo(prog(t, 37.3 + i * 0.09, 38.3 + i * 0.09)); });
+  const g = rankCards[0];
+  rankGlow.position.set(g.position.x, g.position.y, g.position.z - 0.05);
+  rankGlow.material.opacity = 0.35 + 0.65 * env(t, 44.5, 44.9, 45.2, 46.2) + 0.15 * Math.sin(t * 3);
+}
+
+/* ================= DOM: kinetic typography ================= */
+const ui = document.getElementById('ui');
+const texts = [];
+function T(text, cls, css, anim) {
+  const el = document.createElement('div'); el.className = 'txt ' + cls; el.style.cssText = css;
+  const chars = [];
+  const words = text.split(' ');
+  words.forEach((w, wi) => {
+    const ws = document.createElement('span'); ws.className = 'w';
+    for (const ch of w) { const s = document.createElement('span'); s.className = 'c'; s.textContent = ch; ws.appendChild(s); chars.push(s); }
+    el.appendChild(ws); if (wi < words.length - 1) el.appendChild(document.createTextNode(' '));
+  });
+  ui.appendChild(el);
+  const o = { el, chars, anim, seed: texts.length * 31 };
+  texts.push(o); return o;
+}
+const FXIN = {
+  rise: (s, a) => { s.y += a * 70; s.rx -= a * 85; s.bl += a * 10; s.o *= 1 - a; },
+  slam: (s, a) => { s.sc *= 1 + a * 1.8; s.bl += a * 16; s.o *= 1 - a; },
+  drop: (s, a, r) => { s.z += a * 900; s.ry += a * (r - .5) * 140; s.y -= a * 60; s.bl += a * 14; s.o *= 1 - a; },
+  fade: (s, a) => { s.o *= 1 - a; s.bl += a * 8; s.x -= a * 30; },
+  track: (s, a, r, i, n) => { s.x += a * (i - n / 2) * 26; s.o *= 1 - a; s.bl += a * 6; },
+  flip: (s, a) => { s.ry += a * 95; s.x -= a * 40; s.o *= 1 - a; s.bl += a * 6; },
+};
+const FXOUT = {
+  up: (s, p) => { s.y -= p * 70; s.bl += p * 14; s.o *= 1 - p; },
+  scatter: (s, p, r, r2) => { s.x += (r - .5) * p * 600; s.y += (r2 - .5) * p * 400; s.z += p * 500; s.rz += (r - .5) * p * 220; s.o *= 1 - p; s.bl += p * 12; },
+  blur: (s, p) => { s.bl += p * 24; s.sc *= 1 + p * 0.35; s.o *= 1 - p; },
+  fall: (s, p, r) => { s.y += p * (140 + r * 80); s.rx += p * 100; s.o *= 1 - p; s.bl += p * 8; },
+};
+function kin(o, t) {
+  const { anim } = o; const inn = anim.in, out = anim.out, n = o.chars.length;
+  const lastOut = out ? out.t + (n - 1) * (out.stg || 0) + out.dur : Infinity;
+  const hidden = t < inn.t - 0.001 || t > lastOut + 0.001;
+  o.el.style.visibility = hidden ? 'hidden' : 'visible'; if (hidden) return;
+  o.chars.forEach((c, i) => {
+    const r = hash(i + o.seed), r2 = hash(i * 7.3 + o.seed);
+    const ti = inn.t + (inn.stgRand ? r * inn.stgRand : i * (inn.stg || 0));
+    const a = 1 - (E[inn.ease || 'outExpo'])(prog(t, ti, ti + inn.dur));
+    const s = { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, sc: 1, bl: 0, o: 1 };
+    FXIN[inn.fx](s, a, r, i, n);
+    if (out) { const to = out.t + i * (out.stg || 0); const p = (E[out.ease || 'inCubic'])(prog(t, to, to + out.dur)); if (p > 0) FXOUT[out.fx](s, p, r, r2); }
+    if (o.extra) o.extra(s, i, t);
+    c.style.transform = `perspective(900px) translate3d(${s.x.toFixed(2)}px,${s.y.toFixed(2)}px,${s.z.toFixed(2)}px) rotateX(${s.rx.toFixed(2)}deg) rotateY(${s.ry.toFixed(2)}deg) rotateZ(${s.rz.toFixed(2)}deg) scale(${s.sc.toFixed(4)})`;
+    c.style.opacity = clamp(s.o).toFixed(3);
+    c.style.filter = s.bl > 0.15 ? `blur(${s.bl.toFixed(2)}px)` : 'none';
+  });
+}
+
+// --- Scene 1: intro
+T('Every day,', 'sans', 'left:0;width:1920px;text-align:center;top:360px;font-size:44px;font-weight:300;letter-spacing:.04em;color:#cfc9bd', { in: { t: 0.6, dur: 0.9, stg: 0.035, fx: 'rise' }, out: { t: 3.2, dur: 0.5, stg: 0.012, fx: 'up' } });
+T('billions of searches.', 'serif', 'left:0;width:1920px;text-align:center;top:430px;font-size:118px;font-weight:400', { in: { t: 1.05, dur: 1.0, stg: 0.04, fx: 'drop' }, out: { t: 3.3, dur: 0.55, stg: 0.012, fx: 'scatter' } });
+T('Only a few', 'sans', 'left:0;width:1920px;text-align:center;top:400px;font-size:64px;font-weight:300;letter-spacing:.02em', { in: { t: 3.95, dur: 0.8, stg: 0.04, fx: 'track' }, out: { t: 6.2, dur: 0.45, stg: 0.01, fx: 'blur' } });
+T('get found.', 'serif it gold', 'left:0;width:1920px;text-align:center;top:480px;font-size:150px;font-weight:700', { in: { t: 4.55, dur: 0.75, stg: 0.05, fx: 'slam' }, out: { t: 6.25, dur: 0.5, stg: 0.01, fx: 'blur' } });
+
+// --- Scene 2: search
+const searchWrap = document.createElement('div'); searchWrap.id = 'searchWrap';
+searchWrap.innerHTML = `<div id="search"><div class="glass"></div><span id="query"></span><span id="caret"></span></div>`;
+const RES = [];
+for (let i = 0; i < 5; i++) {
+  const r = document.createElement('div'); r.className = 'res' + (i === 0 ? ' top' : '');
+  r.style.top = (390 + i * 122) + 'px';
+  const w1 = 300 + hash(i + 40) * 260, w2 = 640 + hash(i + 41) * 160, w3 = 380 + hash(i + 42) * 220;
+  r.innerHTML = `<div class="fav"></div><div class="b1" style="width:${w1}px"></div><div class="b2" style="width:${w2}px"></div><div class="b3" style="width:${w3}px"></div>`;
+  searchWrap.appendChild(r); RES.push(r);
+}
+ui.appendChild(searchWrap);
+const searchEl = searchWrap.querySelector('#search'), queryEl = searchWrap.querySelector('#query'), caretEl = searchWrap.querySelector('#caret');
+const QUERY = 'how do search engines work';
+const p1tag = document.createElement('div'); p1tag.className = 'tag'; p1tag.textContent = 'Page one'; ui.appendChild(p1tag);
+T('Page one gets the clicks.', 'serif', 'left:0;width:1920px;text-align:center;top:925px;font-size:64px', { in: { t: 11.3, dur: 0.8, stg: 0.025, fx: 'rise' }, out: { t: 13.35, dur: 0.4, stg: 0.006, fx: 'blur' } });
+
+function updateSearch(t) {
+  const vis = t > 7 && t < 14.3; searchWrap.style.visibility = vis ? 'visible' : 'hidden';
+  if (!vis) { p1tag.style.opacity = 0; return; }
+  const pin = E.outExpo(prog(t, 7.25, 8.4));
+  const out = E.inCubic(prog(t, 13.3, 14.1));
+  const press = Math.sin(Math.PI * prog(t, 9.75, 10.05));
+  const rx = lerp(62, 10, pin) - 4 * prog(t, 8.4, 13.3);
+  searchWrap.style.transform = `scale(${1 + out * 0.25})`;
+  searchWrap.style.filter = out > 0.01 ? `blur(${(out * 22).toFixed(1)}px)` : 'none';
+  searchWrap.style.opacity = 1 - out;
+  const up = E.inOutCubic(prog(t, 9.9, 10.6)) * -110;
+  searchEl.style.transform = `translateY(${up + (1 - pin) * 140}px) rotateX(${rx}deg) scale(${(0.85 + 0.15 * pin) * (1 - press * 0.03)})`;
+  searchEl.style.opacity = pin;
+  searchEl.style.filter = pin < 0.98 ? `blur(${((1 - pin) * 14).toFixed(1)}px)` : 'none';
+  searchEl.style.boxShadow = `0 0 ${60 + press * 80}px rgba(217,180,108,${0.18 + press * 0.5})`;
+  const nChars = Math.floor(clamp((t - 8.0) / 1.55) * QUERY.length);
+  queryEl.textContent = QUERY.slice(0, nChars);
+  caretEl.style.opacity = (t > 9.7 ? 0 : (Math.floor(t * 2.6) % 2 === 0 || (t > 8 && t < 9.6)) ? 1 : 0);
+  RES.forEach((r, i) => {
+    const p = E.outExpo(prog(t, 10.2 + i * 0.13, 11.1 + i * 0.13));
+    const y = (1 - p) * 120 - 110;
+    const glow = i === 0 ? env(t, 10.9, 11.4, 13.2, 13.6) : 0;
+    r.style.transform = `translateY(${y}px) rotateX(${(1 - p) * -40 + rx * 0.6}deg) scale(${0.92 + 0.08 * p + glow * 0.02})`;
+    r.style.opacity = p * (i === 0 ? 1 : 0.85 - i * 0.08);
+    r.style.boxShadow = i === 0 ? `0 0 ${50 * glow}px rgba(217,180,108,${0.55 * glow})` : 'none';
+  });
+  const tp = E.outBack(prog(t, 11.5, 12.0));
+  p1tag.style.left = '1490px'; p1tag.style.top = (390 - 110 + 34) + 'px';
+  p1tag.style.transform = `scale(${tp})`; p1tag.style.opacity = tp * (1 - out);
+}
+
+// --- Scene 3: definition (Search Engine Optimization -> SEO)
+const seoTitle = T('Search Engine Optimization', 'serif', 'left:0;width:1920px;text-align:center;top:450px;font-size:128px;font-weight:400', { in: { t: 14.25, dur: 1.0, stg: 0.03, fx: 'drop' } });
+const KEEP = [0, 6, 12]; // S, E, O
+let seoGeom = null;
+function measureSEO() {
+  const rects = seoTitle.chars.map(c => { c.style.transform = 'none'; return c.getBoundingClientRect(); });
+  const ws = KEEP.map(k => rects[k].width);
+  const k1 = 1.9, tot1 = ws.reduce((a, b) => a + b, 0) * k1;
+  let x1 = 960 - tot1 / 2;
+  const k2 = 0.95; let x2 = 160;
+  seoGeom = KEEP.map((k, j) => { const g = { left: rects[k].left, cy: rects[k].top + rects[k].height / 2, w: ws[j], t1: x1, t2: x2 }; x1 += ws[j] * k1; x2 += ws[j] * k2; return g; });
+  seoGeom.k1 = k1; seoGeom.k2 = k2;
+}
+seoTitle.extra = (s, i, t) => {
+  if (!seoGeom) return;
+  const j = KEEP.indexOf(i);
+  const p1 = E.inOutExpo(prog(t, 16.7, 17.7)), p2 = E.inOutExpo(prog(t, 18.3, 19.1));
+  const fo = E.inCubic(prog(t, 21.3, 21.9));
+  if (j < 0) { // dissolve
+    const r = hash(i + 77), d = E.inCubic(prog(t, 16.5 + r * 0.25, 17.2 + r * 0.25));
+    s.y += d * (60 + r * 60); s.bl += d * 18; s.o *= 1 - d; s.sc *= 1 - d * 0.3; return;
+  }
+  const g = seoGeom;
+  // char box: transform origin is 50% 70%; compute translate for left-edge alignment with scale
+  const w = g[j].w;
+  const k = lerp(lerp(1, g.k1, p1), g.k2, p2);
+  const targetLeft = lerp(lerp(g[j].left, g[j].t1, p1), g[j].t2, p2);
+  s.x += targetLeft + (w * k) / 2 - (g[j].left + w / 2);
+  s.y += lerp(0, -230, p2);
+  s.sc *= k;
+  s.o *= 1 - fo; s.bl += fo * 16; s.y -= fo * 50;
+};
+T('SEARCH ENGINE OPTIMIZATION', 'label', 'left:166px;top:150px;font-size:20px', { in: { t: 19.0, dur: 0.8, stg: 0.012, fx: 'track' }, out: { t: 21.3, dur: 0.4, stg: 0.004, fx: 'up' } });
+T('is the craft of making your website', 'sub', 'left:166px;top:520px', { in: { t: 19.25, dur: 0.8, stg: 0.012, fx: 'rise' }, out: { t: 21.3, dur: 0.45, stg: 0.004, fx: 'up' } });
+T('the most relevant, trusted answer', 'serif it gold', 'left:160px;top:590px;font-size:76px;font-weight:400', { in: { t: 19.65, dur: 0.9, stg: 0.02, fx: 'rise' }, out: { t: 21.35, dur: 0.45, stg: 0.004, fx: 'up' } });
+T('to what people are searching for.', 'sub', 'left:166px;top:700px', { in: { t: 20.05, dur: 0.8, stg: 0.012, fx: 'rise' }, out: { t: 21.4, dur: 0.45, stg: 0.004, fx: 'up' } });
+
+// --- Scene 4: crawl
+const chapter = (num, title, sub, tIn, tOut, top = 700) => {
+  T(`HOW IT WORKS  ·  ${num}`, 'label', `left:166px;top:${top}px`, { in: { t: tIn, dur: 0.8, stg: 0.015, fx: 'track' }, out: { t: tOut, dur: 0.4, stg: 0.005, fx: 'up' } });
+  T(title, 'serif', `left:156px;top:${top + 38}px;font-size:150px;font-weight:700`, { in: { t: tIn + 0.15, dur: 0.9, stg: 0.05, fx: 'drop' }, out: { t: tOut + 0.05, dur: 0.45, stg: 0.02, fx: 'scatter' } });
+  sub.forEach((line, i) => T(line, 'sub', `left:166px;top:${top + 220 + i * 50}px;font-size:34px`, { in: { t: tIn + 0.6 + i * 0.15, dur: 0.8, stg: 0.01, fx: 'rise' }, out: { t: tOut, dur: 0.4, stg: 0.003, fx: 'up' } }));
+};
+chapter('01', 'Crawl', ['Bots follow links from page to page,', 'discovering what is on the web.'], 22.7, 29.6, 650);
+const LABELED = { 0: 'yourwebsite.com' };
+(() => { const order = [...Array(NN).keys()].filter(i => i).sort((a, b) => litT[a] - litT[b]); ['/services', '/about', '/blog', '/contact', '/reviews'].forEach((l, j) => LABELED[order[[4, 8, 13, 20, 27][j]]] = l); })();
+const nodeTags = Object.entries(LABELED).map(([i, l]) => { const d = document.createElement('div'); d.className = 'tag'; d.textContent = l; d.style.fontSize = i == 0 ? '22px' : '18px'; ui.appendChild(d); return [Number(i), d]; });
+const _pr = new THREE.Vector3();
+function updateNodeTags(t) {
+  nodeTags.forEach(([i, d]) => {
+    const a = E.outBack(prog(t, litT[i] + 0.1, litT[i] + 0.5)) * (1 - prog(t, 29.4, 29.9));
+    if (a <= 0.001 || t < 22) { d.style.opacity = 0; return; }
+    _pr.copy(nodes[i]).applyMatrix4(crawl.matrixWorld).project(camera);
+    const x = (_pr.x + 1) / 2 * W, y = (1 - _pr.y) / 2 * H;
+    d.style.left = (x + 18) + 'px'; d.style.top = (y - 46) + 'px';
+    d.style.transform = `scale(${a})`; d.style.opacity = clamp(a);
+  });
+}
+// --- Scene 5: index
+chapter('02', 'Index', ['Each page is read, understood', 'and filed in a vast digital library.'], 31.4, 36.3, 650);
+// --- Scene 6: rank
+chapter('03', 'Rank', ['Every search, hundreds of signals', 'decide who earns the top spot.'], 37.5, 45.4, 120);
+const FACTORS = [['Relevance', 'Does it match what was searched?'], ['Quality', 'Is it genuinely helpful?'], ['Authority', 'Do trusted sites link to it?'], ['Experience', 'Is it fast, secure and mobile-friendly?']];
+const factorEls = FACTORS.map(([f, d], i) => {
+  const h = HITS[i] - 0.35;
+  const a = T(f, 'serif it gold', `left:160px;top:${560 + i * 110}px;font-size:56px`, { in: { t: h, dur: 0.6, stg: 0.03, fx: 'flip' }, out: { t: 45.4, dur: 0.4, stg: 0.01, fx: 'up' } });
+  const b = T(d, 'desc', `left:470px;top:${582 + i * 110}px`, { in: { t: h + 0.2, dur: 0.6, stg: 0.008, fx: 'fade' }, out: { t: 45.4, dur: 0.4, stg: 0.003, fx: 'up' } });
+  const dim = (s, j, t) => { const k = i < 3 ? E.inOutSine(prog(t, HITS[i + 1] - 0.4, HITS[i + 1])) : 0; s.o *= 1 - 0.55 * k; };
+  a.extra = dim; b.extra = dim; return a;
+});
+// --- Scene 7: pillars
+T('SEO works on three fronts.', 'serif', 'left:0;width:1920px;text-align:center;top:120px;font-size:76px', { in: { t: 46.5, dur: 0.9, stg: 0.025, fx: 'rise' }, out: { t: 53.3, dur: 0.45, stg: 0.006, fx: 'blur' } });
+[['On-page', 'Content, keywords, structure'], ['Technical', 'Speed, mobile, crawlability'], ['Off-page', 'Links, reviews, reputation']].forEach(([a, b], i) => {
+  const cx = [400, 960, 1520][i];
+  T(a, 'serif it gold', `left:${cx - 400}px;width:800px;text-align:center;top:800px;font-size:60px`, { in: { t: 49.3 + i * 0.35, dur: 0.8, stg: 0.035, fx: 'drop' }, out: { t: 53.25, dur: 0.45, stg: 0.01, fx: 'scatter' } });
+  T(b, 'desc', `left:${cx - 400}px;width:800px;text-align:center;top:888px;font-size:26px`, { in: { t: 49.6 + i * 0.35, dur: 0.7, stg: 0.008, fx: 'fade' }, out: { t: 53.25, dur: 0.4, stg: 0.003, fx: 'up' } });
+});
+// --- Scene 8: outro
+T("Don't chase the algorithm.", 'sans', 'left:0;width:1920px;text-align:center;top:430px;font-size:56px;font-weight:300', { in: { t: 54.6, dur: 0.9, stg: 0.025, fx: 'rise' }, out: { t: 56.9, dur: 0.5, stg: 0.008, fx: 'up' } });
+T('Be the answer.', 'serif it gold', 'left:0;width:1920px;text-align:center;top:440px;font-size:160px;font-weight:700', { in: { t: 57.3, dur: 0.85, stg: 0.05, fx: 'slam' }, out: { t: 59.0, dur: 0.5, stg: 0.01, fx: 'blur' } });
+T('AMIRI', 'serif', 'left:0;width:1920px;text-align:center;top:440px;font-size:120px;font-weight:400;letter-spacing:.28em;padding-left:.28em', { in: { t: 59.35, dur: 1.1, stg: 0.07, fx: 'track' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
+T('DIGITAL AGENCY', 'label', 'left:0;width:1920px;text-align:center;top:612px;font-size:24px;letter-spacing:.6em;padding-left:.6em', { in: { t: 59.8, dur: 1.0, stg: 0.02, fx: 'track' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
+T('amiridigitalagency.co', 'desc', 'left:0;width:1920px;text-align:center;top:680px;font-size:26px;letter-spacing:.08em;color:#c9c2b4', { in: { t: 60.2, dur: 0.9, stg: 0.012, fx: 'fade' }, out: { t: 61.3, dur: 0.6, stg: 0, fx: 'blur' } });
+const endRule = document.createElement('div'); endRule.id = 'endrule'; ui.appendChild(endRule);
+
+/* ================= FX ================= */
+const fx = document.getElementById('fx');
+const flashEl = fx.querySelector('.flash'), leakEl = fx.querySelector('.leak'), sweepEl = fx.querySelector('.sweep'), grainEl = fx.querySelector('.grain'), bars = fx.querySelectorAll('.bars');
+const hblurStd = document.getElementById('hblurStd'), stage = document.getElementById('stage');
+const grains = [];
+for (let g = 0; g < 6; g++) {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const ctx = c.getContext('2d'); const id = ctx.createImageData(256, 256);
+  for (let i = 0; i < id.data.length; i += 4) { const v = rand() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
+  ctx.putImageData(id, 0, 0); grains.push(`url(${c.toDataURL()})`);
+}
+function updateFX(t, frame) {
+  const flash = Math.max(env(t, 6.75, 7.0, 7.0, 7.45), env(t, 21.75, 22.0, 22.0, 22.5) * 0.95, env(t, 45.75, 46.0, 46.0, 46.6) * 0.6);
+  flashEl.style.opacity = flash;
+  const leak = Math.max(env(t, 45.4, 45.95, 46.1, 47.3), env(t, 13.6, 14.0, 14.1, 14.8) * 0.55, env(t, 56.9, 57.4, 57.6, 58.6) * 0.45);
+  leakEl.style.opacity = leak; leakEl.style.transform = `translate(${Math.sin(t * 0.7) * 160}px,${Math.cos(t * 0.5) * 80}px) rotate(${t * 6}deg)`;
+  const sw = prog(t, 13.55, 14.25);
+  sweepEl.style.opacity = sw > 0 && sw < 1 ? Math.sin(Math.PI * sw) : 0; sweepEl.style.transform = `scaleX(${E.outExpo(sw)}) scaleY(${1 + Math.sin(Math.PI * sw) * 1.5})`;
+  grainEl.style.backgroundImage = grains[frame % grains.length]; grainEl.style.transform = `translate(${(hash(frame) * 50) | 0}px,${(hash(frame + 1) * 50) | 0}px)`;
+  // whip pan blur (index -> rank)
+  const wb = Math.sin(Math.PI * prog(t, 36.45, 37.25)) * 60;
+  const zb = Math.sin(Math.PI * prog(t, 6.55, 7.35)) * 10 + Math.sin(Math.PI * prog(t, 21.5, 22.3)) * 10;
+  let f = '';
+  if (wb > 0.5) { hblurStd.setAttribute('stdDeviation', `${wb.toFixed(1)} 0`); f += 'url(#hblur) '; }
+  if (zb > 0.3) f += `blur(${zb.toFixed(1)}px) `;
+  const fadeIn = prog(t, 0, 0.8), fadeOut = 1 - prog(t, 61.4, 62);
+  f += `brightness(${(fadeIn * fadeOut).toFixed(3)})`;
+  stage.style.filter = f;
+  // cinematic letterbox breathes in during the chapters
+  const bh = 64 * env(t, 22.0, 23.0, 45.6, 46.4);
+  bars.forEach(b => b.style.height = bh + 'px');
+  // end rule
+  const er = E.outExpo(prog(t, 59.9, 61.0)) * (1 - prog(t, 61.3, 61.9));
+  endRule.style.transform = `scaleX(${er})`; endRule.style.opacity = er;
+}
+
+/* ================= CAMERA ================= */
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+function camState(t) {
+  let pos, tgt, fov = 45, roll = 0;
+  if (t < 7) {
+    const p = E.inOutSine(prog(t, 0, 6.2)), r = E.inExpo(prog(t, 6.2, 7.0));
+    pos = V(Math.sin(t * 0.12) * 4, lerp(7, 1.2, p), lerp(28, 13, p)).lerp(V(0, 0, 1.5), r);
+    tgt = V(0, 0, 0).lerp(V(0, 0, -6), r); roll = lerp(-0.08, 0, p);
+    fov = 45 + r * 25;
+  } else if (t < 14) {
+    const p = prog(t, 7, 14);
+    pos = V(Math.sin(p * 1.5) * 2, 0.4, lerp(14, 11, p)); tgt = V(0, 0, -10);
+  } else if (t < 22) {
+    const p = E.inOutSine(prog(t, 14, 21.2)), r = E.inExpo(prog(t, 21.2, 22.0));
+    pos = V(lerp(-0.6, 0.8, p), lerp(0.4, 0, p), lerp(12, 10.5, p)).lerp(V(5.3, 0.1, 1.8), r);
+    tgt = V(0.4, 0, 0).lerp(V(5.3, 0.1, 0), r); fov = 45 + r * 20;
+  } else if (t < 37.25) {
+    // crawl orbit
+    const pc = prog(t, 22, 30), a = lerp(-0.7, 0.45, E.inOutSine(pc)), rad = lerp(21, 13.5, E.outCubic(pc));
+    const crawlPos = V(Math.sin(a) * rad, lerp(6, 2.2, E.inOutSine(pc)), Math.cos(a) * rad), crawlTgt = V(-3.2, -0.6, 0);
+    if (t < 30) { pos = crawlPos; tgt = crawlTgt; }
+    else {
+      const pi = E.inOutSine(prog(t, 30.6, 37.2));
+      const idxPos = V(lerp(-2.5, 2.5, pi), 0.8, lerp(18, 16.5, pi)), idxTgt = V(lerp(-1.2, 1.2, pi), 0.3, -1);
+      const w = E.inOutCubic(prog(t, 30.0, 32.2));
+      pos = crawlPos.lerp(idxPos, w); tgt = crawlTgt.lerp(idxTgt, w);
+    }
+    if (t > 36.45) { // whip pan to rank
+      const wp = E.inOutExpo(prog(t, 36.45, 37.25));
+      const rPos = V(40, 0.3, 13), rTgt = V(40, 0, 0);
+      pos.lerp(rPos, wp); tgt.lerp(rTgt, wp); roll = Math.sin(Math.PI * wp) * 0.08;
+    }
+  } else if (t < 46) {
+    const p = E.inOutSine(prog(t, 37.25, 46));
+    pos = V(40 + Math.sin(p * 2) * 0.6, 0.3 + p * 0.3, lerp(13, 11.3, p)); tgt = V(40, 0, 0);
+  } else if (t < 54) {
+    const p = E.inOutSine(prog(t, 46, 54));
+    pos = V(Math.sin(p * 1.4 - 0.7) * 2.2, lerp(1.8, 0.4, p), lerp(15, 12.6, p)); tgt = V(0, -0.2, 0);
+  } else {
+    const p = E.inOutSine(prog(t, 54, 62));
+    const prevPos = V(Math.sin(0.7) * 2.2, 0.4, 12.6);
+    const w = E.inOutCubic(prog(t, 54, 56));
+    pos = prevPos.lerp(V(0, 0.2, lerp(15, 12, p)), w); tgt = V(0, lerp(-0.2, 0, w), 0);
+  }
+  // subtle handheld drift
+  pos.x += Math.sin(t * 0.73) * 0.06 + Math.sin(t * 1.9) * 0.02; pos.y += Math.sin(t * 0.91 + 1) * 0.05;
+  return { pos, tgt, fov, roll };
+}
+function updateCamera(t) {
+  const c = camState(t);
+  camera.position.copy(c.pos); camera.fov = c.fov; camera.updateProjectionMatrix();
+  camera.up.set(Math.sin(c.roll), Math.cos(c.roll), 0); camera.lookAt(c.tgt);
+  camera.updateMatrixWorld();
+}
+
+/* ================= SEEK ================= */
+window.seek = (t, frame = Math.round(t * 30)) => {
+  updateCamera(t);
+  updateMain(t); updateBlob(t); updateCrawl(t); updateIndex(t); updateBeam(t); updateRank(t);
+  scene.updateMatrixWorld();
+  updateSearch(t); updateNodeTags(t);
+  texts.forEach(o => kin(o, t));
+  updateFX(t, frame);
+  bloom.strength = 0.75 + 0.4 * env(t, 44.4, 44.9, 45.2, 46) + 0.5 * env(t, 6.4, 6.9, 7.0, 7.5);
+  composer.render();
+};
+window.DURATION = DURATION;
+document.fonts.ready.then(async () => {
+  await Promise.all(['300 20px Inter', '400 20px Inter', '600 20px Inter', '400 20px Playfair', '700 20px Playfair', 'italic 400 20px Playfair', 'italic 700 20px Playfair'].map(f => document.fonts.load(f)));
+  buildRank(); measureSEO();
+  window.seek(0);
+  window.READY = true;
+  if (!navigator.webdriver) { // live preview when opened in a browser
+    const t0 = performance.now();
+    const loop = () => { const t = ((performance.now() - t0) / 1000) % DURATION; window.seek(t); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
+});
+</script>
+</body>
+</html>
