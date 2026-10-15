@@ -22,7 +22,8 @@ A 62-second, 1920x1080 explainer on what search engine optimization is and how i
 ```bash
 npm install
 node render.js out/ 4 30          # renders seg_*.mp4 + segments.txt into out/
-python3 soundtrack.py out/soundtrack.wav
+python3 soundtrack.py out/soundtrack_raw.wav
+ffmpeg -i out/soundtrack_raw.wav -af "highpass=f=30,loudnorm=I=-14:TP=-1.0:LRA=9" -ar 48000 out/soundtrack.wav
 ffmpeg -f concat -safe 0 -i out/segments.txt -i out/soundtrack.wav -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart seo-explained.mp4
 ```
 
